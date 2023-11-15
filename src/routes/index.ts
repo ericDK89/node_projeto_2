@@ -1,6 +1,6 @@
 import { type FastifyInstance } from 'fastify'
 import { transactionsRoutes } from './transactions'
 
-export const route = async (app: FastifyInstance): Promise<any> => {
-  await app.register(transactionsRoutes)
+export const routes = async (app: FastifyInstance): Promise<void> => {
+  await app.register(transactionsRoutes, { prefix: 'transactions' })
 }
