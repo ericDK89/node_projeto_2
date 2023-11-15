@@ -92,4 +92,38 @@ describe('Transactions routes', () => {
       session_id: expect.any(String)
     })
   })
+
+  it('should be able to get the summary', async () => {
+    const newTransactionCredit = {
+      title: 'Credit transaction',
+      amount: 100,
+      type: 'credit'
+    }
+
+    const newTransactionDebit = {
+      title: 'Debit transaction',
+      amount: 50,
+      type: 'debit'
+    }
+
+    const createCreditTransaction = await request(app.server)
+      .post('/transactions')
+      .send(newTransactionCredit)
+
+    const cookies = createCreditTransaction.get('Set-Cookie')
+
+    await request(app.server)
+      .post('/transactions')
+      .send(newTransactionDebit)
+      .set('Cookie', cookies)
+
+    const summaryResponse = await request(app.server)
+      .get('/transactions/summary')
+      .set('Cookie', cookies)
+      .expect(200)
+
+    expect(summaryResponse.body.summary).toEqual({
+      amount: 50
+    })
+  })
 })
